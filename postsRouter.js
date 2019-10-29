@@ -67,7 +67,7 @@ router.post("/", (req, res) => {
       errorMessage: "Please provide title and contents for the post."
     });
   } else {
-    db.insert(req.body)
+    db.insert({ title: req.body.title, contents: req.body.contents })
       .then(post => {
         db.findById(post.id)
           .then(postBody => res.status(201).json(postBody))
@@ -94,7 +94,7 @@ router.post("/:id/comments", (req, res) => {
             .status(400)
             .json({ errorMessage: "Please provide text for the comment." });
         } else {
-          db.insertComment({ ...req.body, post_id: req.params.id })
+          db.insertComment({ text: req.body.text, post_id: req.params.id })
             .then(commentId =>
               db
                 .findCommentById(commentId.id)
@@ -147,7 +147,10 @@ router.put("/:id", (req, res) => {
             errorMessage: "Please provide title and contents for the post."
           });
         } else {
-          db.update(req.params.id, req.body)
+          db.update(req.params.id, {
+            title: req.body.title,
+            contents: req.body.contents
+          })
             .then(updated => {
               db.findById(req.params.id)
                 .then(post => res.status(200).json(post))
